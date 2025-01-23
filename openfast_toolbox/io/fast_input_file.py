@@ -384,7 +384,7 @@ class FASTInputFileBase(File):
             self._read(IComment=IComment)
         else:  
             raise Exception('No filename provided')
-
+        
     def _read(self, IComment=None):
         if IComment is None:
             IComment=[]
@@ -425,12 +425,12 @@ class FASTInputFileBase(File):
         NUMTAB_FROM_LAB_NOFFSET  += [ 0           , 0               , 0            , 0     ]
         NUMTAB_FROM_LAB_TYPE     += ['mix'        ,'mix'            ,'mix'         , 'mix']
         # SubDyn
-        NUMTAB_FROM_LAB_DETECT   += ['GuyanDampSize'     , 'YoungE'   , 'YoungE'    , 'EA'             , 'MatDens'       ]
-        NUMTAB_FROM_LAB_DIM_VAR  += [6                   , 'NPropSets', 'NXPropSets', 'NCablePropSets' , 'NRigidPropSets']
-        NUMTAB_FROM_LAB_VARNAME  += ['GuyanDampMatrix'   , 'BeamProp' , 'BeamPropX' , 'CableProp'      , 'RigidProp'     ]
-        NUMTAB_FROM_LAB_NHEADER  += [0                   , 2          , 2           , 2                , 2               ]
-        NUMTAB_FROM_LAB_NOFFSET  += [1                   , 0          , 0           , 0                , 0               ]
-        NUMTAB_FROM_LAB_TYPE     += ['num'               , 'num'      , 'num'       , 'num'            , 'num'           ]
+        NUMTAB_FROM_LAB_DETECT   += ['GuyanDampSize'     , 'YoungE'   , 'YoungE'    , 'EA'             , 'MatDens'          , 'k11'             ]
+        NUMTAB_FROM_LAB_DIM_VAR  += [6                   , 'NPropSets', 'NXPropSets', 'NCablePropSets' , 'NRigidPropSets'   , 'NSpringPropSets' ]
+        NUMTAB_FROM_LAB_VARNAME  += ['GuyanDampMatrix'   , 'BeamProp' , 'BeamPropX' , 'CableProp'      , 'RigidProp'        , 'SpringProp'      ]
+        NUMTAB_FROM_LAB_NHEADER  += [0                   , 2          , 2           , 2                , 2                  , 2                 ]
+        NUMTAB_FROM_LAB_NOFFSET  += [1                   , 0          , 0           , 0                , 0                  , 0                 ]
+        NUMTAB_FROM_LAB_TYPE     += ['num'               , 'num'      , 'num'       , 'num'            , 'num'              , 'num'             ]
         # OLAF
         NUMTAB_FROM_LAB_DETECT   += ['GridName'   ]
         NUMTAB_FROM_LAB_DIM_VAR  += ['nGridOut'   ]
@@ -760,8 +760,8 @@ class FASTInputFileBase(File):
                 #print('Reading table {} Dimension {} (based on {})'.format(d['label'],nTabLines,d['tabDimVar']));
                 d['value'] = parseFASTFilTable(lines[i:i+nTabLines],nTabLines,i)
                 i += nTabLines-1
-
-
+            
+                    
 
             self.data.append(d)
             i += 1
@@ -818,7 +818,9 @@ class FASTInputFileBase(File):
 
         def toStringIntFloatStr(x):
             try:
-                if int(x)==x:
+                if isinstance(x, bool):
+                    s='{:>15}'.format(str(x))
+                elif int(x)==x:
                     s='{:15.0f}'.format(x)
                 else:
                     s='{:15.8e}'.format(x)
